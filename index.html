@@ -48,6 +48,19 @@
         nav ul li a:hover {
             text-decoration: underline;
         }
+        #measurements {
+            text-align: center;
+        }
+        #control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +72,7 @@
 
     <nav>
         <ul>
-            <li><a href="#descripcion">Descipción</a></li>
+            <li><a href="#descripcion">Descripción</a></li>
             <li><a href="#mediciones">Mediciones</a></li>
             <li><a href="#control">Control de la Bomba</a></li>
         </ul>
@@ -67,28 +80,42 @@
 
     <section id="descripcion">
         <h2>Descripción</h2>
-        <p>Ésta aplicación fue realizada por el alumno Carlos Iván Orozco Flores de la carrera Ingeniería Electrónica Industrial de la Universidad Autónoma de Zacatecas, con apoyo de los Doctores Jorge de la Torre y Ramos, Francisco Eneldo López Monteagudo y Leonel Ruvalcaba Arreondo con el fin de lograr el grado como ingeniero. 
-        El objetivo del proyecto es realizar el control de un sistema de riego mediante IoT utilizando los servicios de Amazon Web Services, con este sistema de riego se podrán consultar variables importantes en la agricultura para lograr una mejor producción, por ejemplo, la temperatura y humedad relativa, la humedad del suelo. 
-        Además de controlar la bomba para el riego de los cultivos y el nivel de agua para conocer el nivel del agua dentro del pozo. </p>
+        <p>Ésta aplicación fue realizada por el alumno Carlos Iván Orozco Flores...</p>
     </section>
 
     <section id="mediciones">
         <h2>Mediciones</h2>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Julian_Edelman_2019.jpg" alt="Julian Edelman">
-        <p>Agregar codigo para publicar las mediciones </p>
+        <div id="measurements">
+            <p>Cargando datos...</p>
+        </div>
     </section>
 
     <section id="control">
         <h2>Control de la Bomba</h2>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Edelman_Super_Bowl.jpg" alt="Julian Edelman celebrando">
-        <p>Agregar código para controlar la bomba</p>
+        <div id="control-buttons">
+            <button id="btn-on">Encender</button>
+            <button id="btn-off">Apagar</button>
+        </div>
     </section>
 
     <footer>
         <p>&copy; 2025 Sistema de Riego controlado por IoT</p>
     </footer>
 
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1193.0.min.js"></script>
     <script>
+        // Configuración de AWS
+        AWS.config.update({
+            region: 'us-east-2', // Cambiar a tu región
+            credentials: new AWS.CognitoIdentityCredentials({
+                IdentityPoolId: 'us-east-2:506ecbe3-2ad8-41e9-b5d0-e5d6baabd495' // Reemplaza con tu Identity Pool
+            })
+        });
+
+        const dynamoDB = new AWS.DynamoDB.DocumentClient();
+        const iotdata = new AWS.IotData({ endpoint: 'a1qgg85hp8bidp-ats.iot.us-east-2.amazonaws.com' });
+
+        // Función para actualizar fecha y hora
         function updateDateTime() {
             const now = new Date();
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -97,7 +124,55 @@
         }
         updateDateTime();
         setInterval(updateDateTime, 1000);
+
+        // Función para cargar mediciones de DynamoDB
+        async function loadMeasurements() {
+            const params = {
+                TableName: 'esp'
+            };
+
+            try {
+                const data = await dynamoDB.scan(params).promise();
+                const measurements = data.Items;
+
+                const measurementsDiv = document.getElementById('measurements');
+                measurementsDiv.innerHTML = measurements.map(item => `
+                    <p>
+                        <strong>Humedad del suelo:</strong> ${item.soilHumidity}% <br>
+                        <strong>Temperatura:</strong> ${item.temperature}°C <br>
+                        <strong>Nivel de agua:</strong> ${item.waterLevel}%
+                    </p>
+                `).join('');
+            } catch (error) {
+                console.error('Error al cargar mediciones:', error);
+            }
+        }
+        loadMeasurements();
+
+        // Funciones para controlar el motor
+        function sendCommandToMotor(command) {
+            const params = {
+                topic: 'esp32/sub',
+                payload: JSON.stringify({ command }),
+                qos: 0
+            };
+
+            iotdata.publish(params, (err, data) => {
+                if (err) {
+                    console.error('Error al enviar comando:', err);
+                } else {
+                    console.log('Comando enviado:', data);
+                }
+            });
+        }
+
+        document.getElementById('btn-on').addEventListener('click', () => {
+            sendCommandToMotor('motor_on');
+        });
+
+        document.getElementById('btn-off').addEventListener('click', () => {
+            sendCommandToMotor('motor_off');
+        });
     </script>
 </body>
 </html>
-
