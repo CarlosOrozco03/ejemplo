@@ -1,1 +1,67 @@
-<h1>Hello!</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julian Edelman</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        header, footer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        img {
+            display: block;
+            margin: 10px auto;
+            max-width: 100%;
+            height: auto;
+        }
+        section {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Bienvenidos</h1>
+        <p>Hoy es <span id="current-date"></span> y son las <span id="current-time"></span>.</p>
+    </header>
+
+    <section>
+        <h2>Introducción</h2>
+        <p>Esta página está dedicada a Julian Edelman, un ícono en el mundo del fútbol americano y una fuente de inspiración para muchos.</p>
+    </section>
+
+    <section>
+        <h2>Historia de Julian Edelman</h2>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Julian_Edelman_2019.jpg" alt="Julian Edelman">
+        <p>Julian Edelman nació el 22 de mayo de 1986 en Redwood City, California. Fue un jugador profesional de fútbol americano que se destacó como receptor abierto y regresador de despejes para los New England Patriots en la NFL. 
+        Aunque comenzó su carrera universitaria como mariscal de campo, su versatilidad y habilidad lo llevaron a convertirse en uno de los receptores más confiables y efectivos de la liga. Edelman fue una pieza clave en múltiples victorias del Super Bowl y fue nombrado MVP del Super Bowl LIII.</p>
+    </section>
+
+    <section>
+        <h2>Conclusión</h2>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Edelman_Super_Bowl.jpg" alt="Julian Edelman celebrando">
+        <p>La historia de Julian Edelman es un recordatorio de que el trabajo duro y la perseverancia pueden superar cualquier obstáculo. Su legado en el fútbol americano sigue inspirando a las futuras generaciones.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Página dedicada a Julian Edelman</p>
+    </footer>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', options);
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('es-ES');
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
