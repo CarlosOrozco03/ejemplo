@@ -152,7 +152,7 @@
         loadMeasurements();
 
         // Funciones para controlar el motor
-        function sendCommandToMotor(message) {
+        function sendMessageToMotor(message) {
             const params = {
                 topic: 'esp32/sub',
                 payload: JSON.stringify({ message }),
@@ -169,11 +169,11 @@
         }
 
         document.getElementById('btn-on').addEventListener('click', () => {
-            sendCommandToMotor('motor_on');
+            sendMessageToMotor('motor_on');
         });
 
         document.getElementById('btn-off').addEventListener('click', () => {
-            sendCommandToMotor('motor_off');
+            sendMessageToMotor('motor_off');
         });
     </script>
 </body>
