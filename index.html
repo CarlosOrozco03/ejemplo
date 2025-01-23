@@ -140,9 +140,10 @@
                 const measurementsDiv = document.getElementById('measurements');
                 measurementsDiv.innerHTML = measurements.map(item => `
                     <p>
-                        <strong>Humedad del suelo:</strong> ${item.soilHumidity}% <br>
+                        <strong>Fecha de lectura:</strong> ${item.timestamp}<br>
+                        <strong>Humedad del suelo:</strong> ${item.soil_moisture}% <br>
                         <strong>Temperatura:</strong> ${item.temperature}°C <br>
-                        <strong>Nivel de agua:</strong> ${item.waterLevel}%
+                        <strong>Nivel de agua:</strong> ${item.water_level}%
                     </p>
                 `).join('');
             } catch (error) {
