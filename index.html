@@ -130,28 +130,34 @@
         setInterval(updateDateTime, 1000);
 
         // Función para cargar mediciones de DynamoDB
-        async function loadMeasurements() {
-            const params = {
-                TableName: 'esp'
-            };
+        // Función para cargar mediciones de DynamoDB
+async function loadMeasurements() {
+    const params = {
+        TableName: 'esp'
+    };
 
-            try {
-                const data = await dynamoDB.scan(params).promise();
-                const measurements = data.Items;
+    try {
+        const data = await dynamoDB.scan(params).promise();
+        let measurements = data.Items;
 
-                const measurementsDiv = document.getElementById('measurements');
-                measurementsDiv.innerHTML = measurements.map(item => `
-                    <p>
-                        <strong>Fecha de lectura:</strong> ${item.timestamp}<br>
-                        <strong>Humedad del suelo:</strong> ${item.soil_moisture}% <br>
-                        <strong>Temperatura:</strong> ${item.temperature}°C <br>
-                        <strong>Humedad Relativa:</strong> ${item.humidity}% <br>
-                        <strong>Nivel de agua:</strong> ${item.water_level}%
-                    </p>
-                `).join('');
-            } catch (error) {
-                console.error('Error al cargar mediciones:', error);
-            }
+        // Ordenar las mediciones por timestamp (de más reciente a más antiguo)
+        measurements.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        const measurementsDiv = document.getElementById('measurements');
+        measurementsDiv.innerHTML = measurements.map(item => `
+            <p>
+                <strong>Fecha de lectura:</strong> ${new Date(item.timestamp).toLocaleString('es-ES')}<br>
+                <strong>Humedad del suelo:</strong> ${item.soil_moisture}%<br>
+                <strong>Temperatura:</strong> ${item.temperature}°C<br>
+                <strong>Humedad Relativa:</strong> ${item.humidity}%<br>
+                <strong>Nivel de agua:</strong> ${item.water_level}%
+            </p>
+        `).join('');
+    } catch (error) {
+        console.error('Error al cargar mediciones:', error);
+    }
+}
+
         }
         loadMeasurements();
 
